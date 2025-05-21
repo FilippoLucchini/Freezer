@@ -122,27 +122,16 @@ else:
         freezer_id = freezer_data[0]
         st.header(f"{freezer_data[1]} - Torri/Cassetti")
 
-       for cass in get_cassetti(freezer_id):
-            with st.expander(f"Cassetto {cass[2]}"):
+        for cass in get_cassetti(freezer_id):
+            with st.expander(f"Torre/Cassetto {cass[2]}"):
                 box_list = get_box(cass[0])
                 for b in box_list:
                     cols = st.columns([4, 1])
                     cols[0].write(f"Box {b[2]} | Progetto: {b[3]} | Tipo: {b[4]}")
                     if cols[1].button("Rimuovi", key=f"rm_{b[0]}"):
-                    c.execute("DELETE FROM box WHERE id = ?", (b[0],))
-                    conn.commit()
-                    st.rerun()
-
-                if cols[1].button("Modifica", key=f"edit_{b[0]}"):
-                    with st.form(key=f"edit_box_{b[0]}"):
-                        new_pos = st.text_input("Posizione", value=b[2])
-                        new_proj = st.text_input("Progetto", value=b[3])
-                        new_tipo = st.text_input("Tipo campione", index(b[4]))
-                        if st.form_submit_button("Salva modifiche"):
-                            c.execute("UPDATE box SET posizione = ?, progetto = ?, tipo_campione = ? WHERE id = ?", (new_pos, new_proj, new_tipo, b[0]))
-                            conn.commit()
-                            st.success("Box modificato")
-                            st.rerun()
+                        c.execute("DELETE FROM box WHERE id = ?", (b[0],))
+                        conn.commit()
+                        st.experimental_rerun()
 
                 st.markdown("---")
                 with st.form(key=f"add_box_{cass[0]}"):
