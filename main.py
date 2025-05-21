@@ -1,4 +1,9 @@
+# requirements.txt
+# streamlit
+# qrcode
+# sqlite3 (già incluso in Python)
 
+# main.py
 import streamlit as st
 import sqlite3
 import qrcode
@@ -54,14 +59,15 @@ def generate_qr_code(link):
 st.set_page_config(layout="wide")
 st.title("Gestione Freezer di Laboratorio")
 
-page = st.sidebar.selectbox("Navigazione", ["Home"] + [f"Freezer {f[0]}" for f in get_freezers()])
+freezers = get_freezers()
+page = st.sidebar.selectbox("Navigazione", ["Home"] + [f[1] for f in freezers])
 
 if page == "Home":
     st.header("Freezer disponibili")
-    for f in get_freezers():
+    for f in freezers:
         st.subheader(f"{f[1]}")
         st.write(f"Descrizione: {f[2]}")
-        qr_img = generate_qr_code(f"https://freezer-app.streamlit.app/?freezer_id={f[0]}")
+        qr_img = generate_qr_code(f"http://localhost:8501/?freezer_id={f[0]}")
         st.image(qr_img, caption="QR Code per accesso diretto", width=150)
 
     with st.expander("Aggiungi nuovo freezer"):
@@ -72,36 +78,39 @@ if page == "Home":
             conn.commit()
             st.success("Freezer aggiunto")
 
-elif "Freezer" in page:
-    freezer_id = int(page.split()[-1])
-    freezer_data = c.execute("SELECT * FROM freezer WHERE id = ?", (freezer_id,)).fetchone()
-    st.header(f"{freezer_data[1]} - Torri/Cassetti")
+else:
+    freezer_data = next((f for f in freezers if f[1] == page), None)
+    if freezer_data:
+        freezer_id = freezer_data[0]
+        st.header(f"{freezer_data[1]} - Cassetti")
 
-    for cass in get_cassetti(freezer_id):
-        with st.expander(f"Torre/Cassetto {cass[2]}"):
-            box_list = get_box(cass[0])
-            for b in box_list:
-                cols = st.columns([4, 1])
-                cols[0].write(f"Box {b[2]} | Progetto: {b[3]} | Tipo: {b[4]}")
-                if cols[1].button("Rimuovi", key=f"rm_{b[0]}"):
-                    c.execute("DELETE FROM box WHERE id = ?", (b[0],))
-                    conn.commit()
-                    st.rerun()
+        for cass in get_cassetti(freezer_id):
+            with st.expander(f"Cassetto {cass[2]}"):
+                box_list = get_box(cass[0])
+                for b in box_list:
+                    cols = st.columns([4, 1])
+                    cols[0].write(f"Box {b[2]} | Progetto: {b[3]} | Tipo: {b[4]}")
+                    if cols[1].button("Rimuovi", key=f"rm_{b[0]}"):
+                        c.execute("DELETE FROM box WHERE id = ?", (b[0],))
+                        conn.commit()
+                        st.experimental_rerun()
 
-            st.markdown("---")
-            with st.form(key=f"add_box_{cass[0]}"):
-                posizione = st.text_input("Posizione (es. A1)", key=f"pos_{cass[0]}")
-                progetto = st.text_input("Progetto", key=f"proj_{cass[0]}")
-                tipo = st.text_input("Tipo campione", key=f"tipo_{cass[0]}")
-                if st.form_submit_button("Aggiungi box"):
-                    c.execute("INSERT INTO box (cassetto_id, posizione, progetto, tipo_campione) VALUES (?, ?, ?, ?)",
-                              (cass[0], posizione, progetto, tipo))
-                    conn.commit()
-                    st.success("Box aggiunto")
+                st.markdown("---")
+                with st.form(key=f"add_box_{cass[0]}"):
+                    posizione = st.text_input("Posizione (es. A1)", key=f"pos_{cass[0]}")
+                    progetto = st.text_input("Progetto", key=f"proj_{cass[0]}")
+                    tipo = st.selectbox("Tipo campione", ["WGS", "WES", "RNA", "ALTRO"], key=f"tipo_{cass[0]}")
+                    if st.form_submit_button("Aggiungi box"):
+                        c.execute("INSERT INTO box (cassetto_id, posizione, progetto, tipo_campione) VALUES (?, ?, ?, ?)",
+                                  (cass[0], posizione, progetto, tipo))
+                        conn.commit()
+                        st.success("Box aggiunto")
 
-    with st.expander("Aggiungi nuovo cassetto"):
-        numero = st.number_input("Numero cassetto", min_value=1, step=1)
-        if st.button("Aggiungi cassetto"):
-            c.execute("INSERT INTO cassetto (freezer_id, numero) VALUES (?, ?)", (freezer_id, numero))
-            conn.commit()
-            st.success("Cassetto aggiunto")
+        with st.expander("Aggiungi nuovo cassetto"):
+            numero = st.number_input("Numero cassetto", min_value=1, step=1)
+            if st.button("Aggiungi cassetto"):
+                c.execute("INSERT INTO cassetto (freezer_id, numero) VALUES (?, ?)", (freezer_id, numero))
+                conn.commit()
+                st.success("Cassetto aggiunto")
+    else:
+        st.error("Freezer non trovato.")
