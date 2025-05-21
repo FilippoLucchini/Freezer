@@ -79,7 +79,7 @@ if page == "Home":
     st.header("Freezer disponibili")
     for f in freezers:
         if st.button(f"Vai a {f[1]}", key=f"btn_{f[0]}"):
-            st.query_params = freezer_id=f[0]
+            st.query_params = {"freezer_id": str(f[0])}
             st.rerun()
         st.write(f"Descrizione: {f[2]}")
         qr_img = generate_qr_code(f"http://localhost:8501/?freezer_id={f[0]}")
