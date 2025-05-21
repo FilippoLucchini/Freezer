@@ -66,8 +66,8 @@ if page == "Home":
     st.header("Freezer disponibili")
     for f in freezers:
         if st.button(f"Vai a {f[1]}", key=f"btn_{f[0]}"):
-            st.experimental_set_query_params(freezer_id=f[0])
-            st.experimental_rerun()
+            st.query_params(freezer_id=f[0])
+            st.rerun()
         st.write(f"Descrizione: {f[2]}")
         qr_img = generate_qr_code(f"http://localhost:8501/?freezer_id={f[0]}")
         st.image(qr_img, caption="QR Code per accesso diretto", width=150)
@@ -95,7 +95,7 @@ else:
                     if cols[1].button("Rimuovi", key=f"rm_{b[0]}"):
                         c.execute("DELETE FROM box WHERE id = ?", (b[0],))
                         conn.commit()
-                        st.experimental_rerun()
+                        st.rerun()
 
                 st.markdown("---")
                 with st.form(key=f"add_box_{cass[0]}"):
