@@ -65,7 +65,9 @@ page = st.sidebar.selectbox("Navigazione", ["Home"] + [f[1] for f in freezers])
 if page == "Home":
     st.header("Freezer disponibili")
     for f in freezers:
-        st.subheader(f"{f[1]}")
+        if st.button(f"Vai a {f[1]}", key=f"btn_{f[0]}"):
+            st.experimental_set_query_params(freezer_id=f[0])
+            st.experimental_rerun()
         st.write(f"Descrizione: {f[2]}")
         qr_img = generate_qr_code(f"http://localhost:8501/?freezer_id={f[0]}")
         st.image(qr_img, caption="QR Code per accesso diretto", width=150)
@@ -82,10 +84,10 @@ else:
     freezer_data = next((f for f in freezers if f[1] == page), None)
     if freezer_data:
         freezer_id = freezer_data[0]
-        st.header(f"{freezer_data[1]} - Torri/Cassetti")
+        st.header(f"{freezer_data[1]} - Cassetti")
 
         for cass in get_cassetti(freezer_id):
-            with st.expander(f"Torre/Cassetto {cass[2]}"):
+            with st.expander(f"Cassetto {cass[2]}"):
                 box_list = get_box(cass[0])
                 for b in box_list:
                     cols = st.columns([4, 1])
