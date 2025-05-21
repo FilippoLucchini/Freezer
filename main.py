@@ -23,7 +23,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS freezer (
 c.execute('''CREATE TABLE IF NOT EXISTS cassetto (
     id INTEGER PRIMARY KEY,
     freezer_id INTEGER,
-    numero INTEGER,
+    nome TEXT,
     FOREIGN KEY (freezer_id) REFERENCES freezer(id)
 )''')
 
@@ -82,10 +82,10 @@ else:
     freezer_data = next((f for f in freezers if f[1] == page), None)
     if freezer_data:
         freezer_id = freezer_data[0]
-        st.header(f"{freezer_data[1]} - Torri/Cassetti")
+        st.header(f"{freezer_data[1]} - Cassetti")
 
         for cass in get_cassetti(freezer_id):
-            with st.expander(f"Torre/Cassetto {cass[2]}"):
+            with st.expander(f"Cassetto {cass[2]}"):
                 box_list = get_box(cass[0])
                 for b in box_list:
                     cols = st.columns([4, 1])
@@ -107,9 +107,9 @@ else:
                         st.success("Box aggiunto")
 
         with st.expander("Aggiungi nuovo cassetto"):
-            numero = st.number_input("Numero cassetto", min_value=1, step=1)
+            nome_cassetto = st.text_input("Nome cassetto")
             if st.button("Aggiungi cassetto"):
-                c.execute("INSERT INTO cassetto (freezer_id, numero) VALUES (?, ?)", (freezer_id, numero))
+                c.execute("INSERT INTO cassetto (freezer_id, nome) VALUES (?, ?)", (freezer_id, nome_cassetto))
                 conn.commit()
                 st.success("Cassetto aggiunto")
     else:
