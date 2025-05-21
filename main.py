@@ -82,10 +82,10 @@ else:
     freezer_data = next((f for f in freezers if f[1] == page), None)
     if freezer_data:
         freezer_id = freezer_data[0]
-        st.header(f"{freezer_data[1]} - Cassetti")
+        st.header(f"{freezer_data[1]} - Torri/Cassetti")
 
         for cass in get_cassetti(freezer_id):
-            with st.expander(f"Cassetto {cass[2]}"):
+            with st.expander(f"Torre/Cassetto {cass[2]}"):
                 box_list = get_box(cass[0])
                 for b in box_list:
                     cols = st.columns([4, 1])
