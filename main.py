@@ -59,8 +59,18 @@ def generate_qr_code(link):
 st.set_page_config(layout="wide")
 st.title("Gestione Freezer di Laboratorio")
 
-query_params = st.query_params
-freezer_id_from_url = query_params["freezer_id"] if "freezer_id" in query_params else None
+freezer_id_from_url = st.query_params.get("freezer_id")
+if isinstance(freezer_id_from_url, str):
+    try:
+        freezer_id = int(freezer_id_from_url)
+        freezer_data = next((f for f in freezers if f[0] == freezer_id), None)
+        page = freezer_data[1] if freezer_data else "Home"
+    except ValueError:
+        freezer_id = None
+        page = "Home"
+else:
+    freezer_id = None
+    page = st.sidebar.selectbox("Navigazione", ["Home"] + [f[1] for f in freezers])
 
 freezers = get_freezers()
 
