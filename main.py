@@ -23,8 +23,7 @@ def login():
 
     # Esempio semplice: username e password hardcoded
     users = {
-        "admin": "password123",
-        "user1": "pass1"
+        "ddlab": "ddlabno1"
     }
 
     if st.button("Accedi"):
