@@ -75,10 +75,10 @@ if page == "Home":
 elif "Freezer" in page:
     freezer_id = int(page.split()[-1])
     freezer_data = c.execute("SELECT * FROM freezer WHERE id = ?", (freezer_id,)).fetchone()
-    st.header(f"{freezer_data[1]} - Cassetti")
+    st.header(f"{freezer_data[1]} - Torri/Cassetti")
 
     for cass in get_cassetti(freezer_id):
-        with st.expander(f"Cassetto {cass[2]}"):
+        with st.expander(f"Torre/Cassetto {cass[2]}"):
             box_list = get_box(cass[0])
             for b in box_list:
                 cols = st.columns([4, 1])
