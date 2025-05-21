@@ -77,12 +77,10 @@ else:
 
 if page == "Home":
     st.header("Freezer disponibili")
-    for f in freezers:
-        if st.button(f"Vai a {f[1]}", key=f"btn_{f[0]}"):
-            freezer_id_from_url = query_params.get("freezer_id", [None])[0]
-            st.experimental_rerun()
+    for f in get_freezers():
+        st.subheader(f"{f[1]}")
         st.write(f"Descrizione: {f[2]}")
-        qr_img = generate_qr_code(f"http://localhost:8501/?freezer_id={f[0]}")
+        qr_img = generate_qr_code(f"https://freezer-app.streamlit.app/?freezer_id={f[0]}")
         st.image(qr_img, caption="QR Code per accesso diretto", width=150)
 
     with st.expander("Aggiungi nuovo freezer"):
