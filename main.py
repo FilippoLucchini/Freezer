@@ -80,8 +80,6 @@ if page == "Home":
     for f in get_freezers():
         st.subheader(f"{f[1]}")
         st.write(f"Descrizione: {f[2]}")
-        qr_img = generate_qr_code(f"https://freezer-app.streamlit.app/?freezer_id={f[0]}")
-        st.image(qr_img, caption="QR Code per accesso diretto", width=150)
 
     with st.expander("Aggiungi nuovo freezer"):
         nome = st.text_input("Nome freezer")
