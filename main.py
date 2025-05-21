@@ -10,6 +10,31 @@ import qrcode
 from io import BytesIO
 from PIL import Image
 
+def login():
+    if 'logged_in' not in st.session_state:
+        st.session_state.logged_in = False
+
+    if st.session_state.logged_in:
+        return True
+
+    st.title("Login")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    # Esempio semplice: username e password hardcoded
+    users = {
+        "admin": "password123",
+        "user1": "pass1"
+    }
+
+    if st.button("Accedi"):
+        if username in users and users[username] == password:
+            st.session_state.logged_in = True
+            st.experimental_rerun()
+        else:
+            st.error("Username o password errati")
+    return False
+    
 # --- DATABASE SETUP ---
 conn = sqlite3.connect("freezer_db.sqlite")
 c = conn.cursor()
@@ -56,6 +81,9 @@ def generate_qr_code(link):
     return Image.open(buf)
 
 # --- STREAMLIT UI ---
+if not login():
+    st.stop()
+    
 st.set_page_config(layout="wide")
 st.title("DDLAB Freezer Manager")
 
