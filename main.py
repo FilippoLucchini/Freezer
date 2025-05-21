@@ -54,7 +54,7 @@ def generate_qr_code(link):
 st.set_page_config(layout="wide")
 st.title("Gestione Freezer di Laboratorio")
 
-page = st.sidebar.selectbox("Navigazione", ["Home"] + [f"Freezer {f[1]}" for f in get_freezers()])
+page = st.sidebar.selectbox("Navigazione", ["Home"] + [f"Freezer {f[0]}" for f in get_freezers()])
 
 if page == "Home":
     st.header("Freezer disponibili")
