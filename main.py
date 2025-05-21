@@ -57,7 +57,7 @@ def generate_qr_code(link):
 
 # --- STREAMLIT UI ---
 st.set_page_config(layout="wide")
-st.title("Gestione Freezer di Laboratorio")
+st.title("DDLAB Freezer Manager")
 
 query_params = st.query_params
 freezer_id_from_url = query_params.get("freezer_id", None)
