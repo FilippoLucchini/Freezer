@@ -29,7 +29,7 @@ def login():
     if st.button("Accedi"):
         if username in users and users[username] == password:
             st.session_state.logged_in = True
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("Username o password errati")
     return False
