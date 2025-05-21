@@ -93,10 +93,10 @@ else:
     freezer_data = next((f for f in freezers if f[1] == page), None)
     if freezer_data:
         freezer_id = freezer_data[0]
-        st.header(f"{freezer_data[1]} - Cassetti")
+        st.header(f"{freezer_data[1]} - Torri/Cassetti")
 
         for cass in get_cassetti(freezer_id):
-            with st.expander(f"Cassetto {cass[2]}"):
+            with st.expander(f"Torre/Cassetto {cass[2]}"):
                 box_list = get_box(cass[0])
                 for b in box_list:
                     cols = st.columns([4, 1])
@@ -110,7 +110,7 @@ else:
                 with st.form(key=f"add_box_{cass[0]}"):
                     posizione = st.text_input("Posizione (es. A1)", key=f"pos_{cass[0]}")
                     progetto = st.text_input("Progetto", key=f"proj_{cass[0]}")
-                    tipo = st.selectbox("Tipo campione", ["WGS", "WES", "RNA", "ALTRO"], key=f"tipo_{cass[0]}")
+                    tipo = st.text_input("Tipo campione", key=f"tipo_{cass[0]}")
                     if st.form_submit_button("Aggiungi box"):
                         c.execute("INSERT INTO box (cassetto_id, posizione, progetto, tipo_campione) VALUES (?, ?, ?, ?)",
                                   (cass[0], posizione, progetto, tipo))
