@@ -86,7 +86,7 @@ elif "Freezer" in page:
                 if cols[1].button("Rimuovi", key=f"rm_{b[0]}"):
                     c.execute("DELETE FROM box WHERE id = ?", (b[0],))
                     conn.commit()
-                    st.experimental_rerun()
+                    st.rerun()
 
             st.markdown("---")
             with st.form(key=f"add_box_{cass[0]}"):
