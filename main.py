@@ -59,15 +59,28 @@ def generate_qr_code(link):
 st.set_page_config(layout="wide")
 st.title("Gestione Freezer di Laboratorio")
 
+query_params = st.experimental_get_query_params()
+freezer_id_from_url = query_params.get("freezer_id", [None])[0]
+
 freezers = get_freezers()
-page = st.sidebar.selectbox("Navigazione", ["Home"] + [f[1] for f in freezers])
+
+if freezer_id_from_url:
+    try:
+        freezer_id = int(freezer_id_from_url)
+        freezer_data = next((f for f in freezers if f[0] == freezer_id), None)
+        page = freezer_data[1] if freezer_data else "Home"
+    except ValueError:
+        freezer_id = None
+        page = "Home"
+else:
+    page = st.sidebar.selectbox("Navigazione", ["Home"] + [f[1] for f in freezers])
 
 if page == "Home":
     st.header("Freezer disponibili")
     for f in freezers:
         if st.button(f"Vai a {f[1]}", key=f"btn_{f[0]}"):
-            st.query_params(freezer_id=f[0])
-            st.rerun()
+            st.experimental_set_query_params(freezer_id=f[0])
+            st.experimental_rerun()
         st.write(f"Descrizione: {f[2]}")
         qr_img = generate_qr_code(f"http://localhost:8501/?freezer_id={f[0]}")
         st.image(qr_img, caption="QR Code per accesso diretto", width=150)
@@ -95,7 +108,7 @@ else:
                     if cols[1].button("Rimuovi", key=f"rm_{b[0]}"):
                         c.execute("DELETE FROM box WHERE id = ?", (b[0],))
                         conn.commit()
-                        st.rerun()
+                        st.experimental_rerun()
 
                 st.markdown("---")
                 with st.form(key=f"add_box_{cass[0]}"):
