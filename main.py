@@ -128,7 +128,7 @@ else:
                 
         for b in box_list:
             cols = st.columns([3, 1, 1])
-            with cols[0]:
+        with cols[0]:
             st.write(f"Box {b[2]} | Progetto: {b[3]} | Tipo: {b[4]}")
         with cols[1]:
         if st.button("Modifica", key=f"edit_{b[0]}"):
