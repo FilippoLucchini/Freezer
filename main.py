@@ -125,13 +125,35 @@ else:
         for cass in get_cassetti(freezer_id):
             with st.expander(f"Torre/Cassetto {cass[2]}"):
                 box_list = get_box(cass[0])
-                for b in box_list:
-                    cols = st.columns([4, 1])
-                    cols[0].write(f"Box {b[2]} | Progetto: {b[3]} | Tipo: {b[4]}")
-                    if cols[1].button("Rimuovi", key=f"rm_{b[0]}"):
-                        c.execute("DELETE FROM box WHERE id = ?", (b[0],))
-                        conn.commit()
-                        st.experimental_rerun()
+              for b in box_list:
+    cols = st.columns([3, 1, 1])
+    with cols[0]:
+        st.write(f"Box {b[2]} | Progetto: {b[3]} | Tipo: {b[4]}")
+    with cols[1]:
+        if st.button("Modifica", key=f"edit_{b[0]}"):
+            st.session_state[f"editing_{b[0]}"] = True
+    with cols[2]:
+        if st.button("Rimuovi", key=f"rm_{b[0]}"):
+            c.execute("DELETE FROM box WHERE id = ?", (b[0],))
+            conn.commit()
+            st.experimental_rerun()
+
+    # Se in modalità modifica
+    if st.session_state.get(f"editing_{b[0]}", False):
+        with st.form(key=f"form_edit_{b[0]}"):
+            new_pos = st.text_input("Posizione", value=b[2], key=f"new_pos_{b[0]}")
+            new_proj = st.text_input("Progetto", value=b[3], key=f"new_proj_{b[0]}")
+            new_tipo = st.text_input("Tipo campione", value=b[4], key=f"new_tipo_{b[0]}")
+            col_mod = st.columns([1, 1])
+            if col_mod[0].form_submit_button("Salva modifiche"):
+                c.execute("UPDATE box SET posizione = ?, progetto = ?, tipo_campione = ? WHERE id = ?",
+                          (new_pos, new_proj, new_tipo, b[0]))
+                conn.commit()
+                st.session_state[f"editing_{b[0]}"] = False
+                st.success("Box modificato")
+                st.experimental_rerun()
+            if col_mod[1].form_submit_button("Annulla"):
+                st.session_state[f"editing_{b[0]}"] = False
 
                 st.markdown("---")
                 with st.form(key=f"add_box_{cass[0]}"):
