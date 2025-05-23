@@ -136,7 +136,7 @@ else:
         if st.button("Rimuovi", key=f"rm_{b[0]}"):
             c.execute("DELETE FROM box WHERE id = ?", (b[0],))
             conn.commit()
-            st.experimental_rerun()
+            st.rerun()
 
     # Se in modalità modifica
     if st.session_state.get(f"editing_{b[0]}", False):
@@ -151,7 +151,7 @@ else:
                 conn.commit()
                 st.session_state[f"editing_{b[0]}"] = False
                 st.success("Box modificato")
-                st.experimental_rerun()
+                st.rerun()
             if col_mod[1].form_submit_button("Annulla"):
                 st.session_state[f"editing_{b[0]}"] = False
 
