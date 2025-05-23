@@ -128,16 +128,16 @@ else:
                 
         for b in box_list:
             cols = st.columns([3, 1, 1])
-        with cols[0]:
-            st.write(f"Box {b[2]} | Progetto: {b[3]} | Tipo: {b[4]}")
-        with cols[1]:
-    if st.button("Modifica", key=f"edit_{b[0]}"):
-            st.session_state[f"editing_{b[0]}"] = True
-        with cols[2]:
-    if st.button("Rimuovi", key=f"rm_{b[0]}"):
-            c.execute("DELETE FROM box WHERE id = ?", (b[0],))
-            conn.commit()
-            st.rerun()
+            with cols[0]:
+                st.write(f"Box {b[2]} | Progetto: {b[3]} | Tipo: {b[4]}")
+            with cols[1]:
+                if st.button("Modifica", key=f"edit_{b[0]}"):
+                    st.session_state[f"editing_{b[0]}"] = True
+            with cols[2]:
+                if st.button("Rimuovi", key=f"rm_{b[0]}"):
+                    c.execute("DELETE FROM box WHERE id = ?", (b[0],))
+                    conn.commit()
+                    st.rerun()
 
     # Se in modalità modifica
     if st.session_state.get(f"editing_{b[0]}", False):
